@@ -64,7 +64,7 @@ namespace render
 	}
 
 	void DrawCircle(HDC hdc, int centerX, int centerY, int radius, COLORREF color) {
-		HPEN hPen = CreatePen(PS_DASH, 2, color); // 使用红色、宽度为1像素，实线样式的画笔
+		HPEN hPen = CreatePen(PS_DASH, 2, color); // 使 煤 色     为1   兀 实    式 幕   
 		SelectObject(hdc, hPen);
 		Ellipse(hdc, centerX - radius, centerY - radius, centerX + radius, centerY + radius);
 		DeleteObject(hPen);
@@ -101,7 +101,7 @@ namespace render
 
 	void RenderLine(HDC hdc, float p1x, float p1y, float p2x, float p2y, COLORREF borderColor)
 	{
-		HPEN hPen = CreatePen(PS_DASH, 2, borderColor); // 使用红色、宽度为1像素，实线样式的画笔
+		HPEN hPen = CreatePen(PS_DASH, 2, borderColor); // 使 煤 色     为1   兀 实    式 幕   
 		SelectObject(hdc, hPen);
 		MoveToEx(hdc, (int)p1x, (int)p1y, (LPPOINT)NULL);
 		LineTo(hdc, (int)p2x, (int)p2y);
@@ -517,19 +517,17 @@ void Bunnyhop(uintptr_t player)
 Vector3 aimBot(C_UTL_VECTOR aimPunchCache, int getShotsFired, Vector3& cameraPos, float& fov, bool isHot, Vector3 baseViewAngles, uintptr_t boneArray) {
 	Vector3 aimPos;
 	Vector3 newAngle;
-
 	aimPos = process->read<Vector3>(boneArray + AimBones/*head*/ * 32);
 	//aimPos.Print();
 	const Vector3 angle = CalculateAngle(cameraPos, aimPos, baseViewAngles);
 
 	newAngle = calculateBestAngle(angle, fov/*fov*/);
-
 	if (newAngle.IsZero()) {
 		return 0;
 	}
 
 	if (isHot) {
-		if (GetAsyncKeyState(VK_SHIFT) & 0x8000) {
+		if (GetAsyncKeyState(VK_XBUTTON1) & 0x8000) {
 			if (brecoilControl)
 			{
 				Vector3 aimPunchAngle = process->read<Vector3>(aimPunchCache.data + (aimPunchCache.count - 1) * sizeof(Vector3));
@@ -1028,7 +1026,7 @@ void DrawMenu()
 void DrawAimBotFOV(float Fov)
 {
 	float Radius = tan(FOV / 180.f * std::numbers::pi_v<float> / 2.f) / tan(Fov / 180.f * std::numbers::pi_v<float> / 2.f) * g::gameBounds.right;
-	render::DrawCircle(g::hdcBuffer, g::gameBounds.right / 2, g::gameBounds.bottom / 2, Radius, RGB(134, 133, 218));
+	//render::DrawCircle(g::hdcBuffer, g::gameBounds.right / 2, g::gameBounds.bottom / 2, Radius, RGB(134, 133, 218));
 
 	float Length;
 	float radian;
@@ -1050,8 +1048,8 @@ void DrawAimBotFOV(float Fov)
 	//Gui.Line(Pos, LineEndPoint[0], Color, 1.5);
 	//Gui.Line(Pos, LineEndPoint[1], Color, 1.5);
 
-	render::RenderLine(g::hdcBuffer, Pos.x, Pos.y, LineEndPoint[0].x, LineEndPoint[0].y, RGB(134, 133, 218));
-	render::RenderLine(g::hdcBuffer, Pos.x, Pos.y, LineEndPoint[1].x, LineEndPoint[1].y, RGB(134, 133, 218));
+	//render::RenderLine(g::hdcBuffer, Pos.x, Pos.y, LineEndPoint[0].x, LineEndPoint[0].y, RGB(134, 133, 218));
+	//render::RenderLine(g::hdcBuffer, Pos.x, Pos.y, LineEndPoint[1].x, LineEndPoint[1].y, RGB(134, 133, 218));
 }
 
 void loop()
@@ -1093,7 +1091,7 @@ void loop()
 				PlayerFov = process->read<int>(CameraServices + CCSPlayerBase_CameraServices::m_iFOVStart);
 		}
 	}
-	else if (indirectUpdate > 10)
+	else if (indirectUpdate > 20)
 	{
 		indirectUpdate = 0;
 	}
@@ -1109,7 +1107,7 @@ void loop()
 		return;
 	const view_matrix_t view_matrix = process->read<view_matrix_t>(cs2_module_client.base + Offset["client_dll"]["data"]["dwViewMatrix"]["value"] /*client_dll::dwViewMatrix*/);
 
-	int playerIndex = 0;
+	int playerIndex = -1;
 	uintptr_t list_entry;
 
 	static uintptr_t localCGameSceneNode;
@@ -1122,7 +1120,7 @@ void loop()
 
 	const Vector3 localOrigin = process->read<Vector3>(localCGameSceneNode + CGameSceneNode::m_vecOrigin);
 
-	render::RenderText(g::hdcBuffer, 50, 50, "HalfPeople CSGO 2 GameHack Test", RGB(200, 200, 200), 30);
+	render::RenderText(g::hdcBuffer, 50, 50, "CSGO 2 Test 1.0 By XiXi", RGB(200, 200, 200), 30);
 	if (c4IsPlanted)
 	{
 		const uintptr_t planted_c4 = process->read<uintptr_t>(process->read<uintptr_t>(cs2_module_client.base + Offset["client_dll"]["data"]["dwPlantedC4"]["value"] /*client_dll::dwPlantedC4*/));
@@ -1168,13 +1166,16 @@ void loop()
 		list_entry = process->read<uintptr_t>(entity_list + (8 * (playerIndex & 0x7FFF) >> 9) + 16);
 		if (!list_entry)
 			break;
-
+		//std::cout << "ListEntry pointer: " << list_entry << std::endl;
 		const uintptr_t player = process->read<uintptr_t>(list_entry + 120 * (playerIndex & 0x1FF));
 		if (!player)
 			continue;
 
 		const int playerTeam = process->read<int>(player + C_BaseEntity::m_iTeamNum);
-
+		if ((!AimTeam) && playerTeam == localTeam)
+		{
+			continue;
+		}
 		const std::uint32_t playerPawn = process->read<std::uint32_t>(player + CCSPlayerController::m_hPlayerPawn);
 
 		const uintptr_t list_entry2 = process->read<uintptr_t>(entity_list + 0x8 * ((playerPawn & 0x7FFF) >> 9) + 16);
@@ -1219,7 +1220,6 @@ void loop()
 
 			float distance = localOrigin.calculate_distance(origin);
 			int roundedDistance = std::round(distance / 10.f);
-
 			render::DrawBorderBox(
 				g::hdcBuffer,
 				screenHead.x - width / 2,
@@ -1229,7 +1229,7 @@ void loop()
 				(localTeam == playerTeam ? RGB(75, 175, 75) : RGB(175, 75, 75))
 			);
 			if (DrawESPLine)
-				render::RenderLine(g::hdcBuffer, screenHead.x, screenHead.y + height, g::gameBounds.right / 2, g::gameBounds.bottom * 0.8, (localTeam == playerTeam ? RGB(75, 175, 75) : RGB(175, 75, 75)));
+				render::RenderLine(g::hdcBuffer, screenHead.x, screenHead.y + height, g::gameBounds.right / 2, g::gameBounds.bottom * 0.05, (localTeam == playerTeam ? RGB(75, 175, 75) : RGB(175, 75, 75)));
 
 			render::DrawBorderBox(
 				g::hdcBuffer,
@@ -1546,7 +1546,7 @@ void FunctionT()
 	{
 		indirectUpdate++;
 		localPlayer = process->read<uintptr_t>(cs2_module_client.base + Offset["client_dll"]["data"]["dwLocalPlayerPawn"]["value"] /*client_dll::dwLocalPlayerPawn*/);
-		//std::cout << "\n " << process->read<int>(localPlayer + C_BaseEntity::m_iHealth);
+		//std::cout << "\n " << process->read<int>(localPlayer + C_BaseEntity::m_iTeamNum);
 
 		baseViewAnglesAddy = cs2_module_client.base + Offset["client_dll"]["data"]["dwViewAngles"]["value"] /*client_dll::dwViewAngles*/;
 	}
@@ -1608,19 +1608,11 @@ void FunctionT()
 		if (playerHealth <= 0 || playerHealth > 100)
 			continue;
 
-		if (OnlyAttackVisible)
-		{
-			const int EntitySpottedState = process->read<DWORD_PTR>(pCSPlayerPawn + C_CSPlayerPawnBase::m_entitySpottedState + EntitySpottedState_t::m_bSpottedByMask);
-			if (!(EntitySpottedState & (1 << localPlayer)))
-				continue;
-		}
-
 		const uintptr_t boneArray = process->read<uintptr_t>(CGameSceneNode + CSkeletonInstance::m_modelState + CGameSceneNode::m_vecOrigin);
 
 		if (AimBot)
 		{
 			Vector3 AimTargteBuffer = aimBot(aimPunchCache, shotsFired, cameraPos, fov, AimBotHot, baseViewAngles, boneArray);
-
 			if (!AimTargteBuffer.IsZero())
 			{
 				AimTarget = AimTargteBuffer;

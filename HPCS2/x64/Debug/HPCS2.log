@@ -1,0 +1,9 @@
+﻿  memory.cpp
+D:\csgo\HPCS2-main\HPCS2\memory.hpp(97,1): warning C4267: “参数”: 从“size_t”转换到“ULONG”，可能丢失数据
+D:\csgo\HPCS2-main\HPCS2\handle_hijack.hpp(198,15): warning C4244: “*=”: 从“double”转换到“DWORD”，可能丢失数据
+D:\csgo\HPCS2-main\HPCS2\handle_hijack.hpp(249,64): warning C4312: “类型强制转换”: 从“ULONG”转换到更大的“DWORD *”
+  Source.cpp
+  The contents of <numbers> are available only with C++20 or later.
+D:\csgo\HPCS2-main\HPCS2\memory.hpp(97,1): warning C4267: “参数”: 从“size_t”转换到“ULONG”，可能丢失数据
+D:\csgo\HPCS2-main\HPCS2\Source.cpp(16,10): fatal error C1083: 无法打开包括文件: “nlohmann/json.hpp”: No such file or directory
+  正在生成代码...

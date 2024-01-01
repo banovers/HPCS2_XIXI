@@ -1,6 +1,6 @@
 /*
  * Created using https://github.com/a2x/cs2-dumper
- * Sat, 4 Nov 2023 21:18:20 +0000
+ * Thu, 14 Dec 2023 05:42:09 +0000
  */
 
 #pragma once
@@ -156,6 +156,8 @@ namespace EventClientProcessGameInput_t {
 namespace EventClientProcessInput_t {
     constexpr std::ptrdiff_t m_LoopState = 0x0; // EngineLoopState_t
     constexpr std::ptrdiff_t m_flRealTime = 0x28; // float
+    constexpr std::ptrdiff_t m_flTickInterval = 0x2C; // float
+    constexpr std::ptrdiff_t m_flTickStartTime = 0x30; // double
 }
 
 namespace EventClientProcessNetworking_t {
